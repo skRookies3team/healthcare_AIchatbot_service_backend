@@ -1,0 +1,79 @@
+spring:
+  config:
+    import: "optional:file:.env[.properties]"
+
+  application:
+    name: petlog
+
+  # [중요] Spring AI 설정 경로 (이전 openai.api.key 에서 변경됨)
+  ai:
+    openai:
+      api-key: ${OPENAI_API_KEY}      # .env 파일의 변수 값 매핑
+      chat:
+        options:
+          model: gpt-4o               # 사용할 모델 지정 (gpt-4o, gpt-4-turbo 등)
+
+  # PostgreSQL 설정
+  datasource:
+    url: "${DB_URL}"
+    username: "${DB_USERNAME}"
+    password: "${DB_PASSWORD}"
+    driverClassName: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    properties:
+      hibernate:
+        format_sql: true # SQL 로그 예쁘게 출력
+
+  # MongoDB 설정
+  data:
+    mongodb:
+      uri: "${MONGO_URI}"
+
+  # MSA Feign Client 설정
+  cloud:
+    openfeign:
+      client:
+        config:
+          default:
+            connectTimeout: 5000 # 연결 시도 제한 시간 (5초)
+            readTimeout: 5000    # 응답 대기 제한 시간 (5초)
+
+server:
+  port: 8087
+
+# === 외부 서비스 URL 설정 (Default Profile) ===
+external:
+  user-service:
+    url: ${USER_SERVICE_URL}
+  pet-service:
+    url: ${PET_SERVICE_URL}
+  notification-service:
+    url: ${NOTIFICATION_SERVICE_URL:http://localhost:8083}
+  storage-service:
+    url: ${STORAGE_SERVICE_URL:http://localhost:8084}
+
+# [수정] springdoc 설정을 default 프로필 영역으로 이동
+springdoc:
+  api-docs:
+    path: "${SWAGGER_DOCS}"
+  swagger-ui:
+    path: "${SWAGGER_UI}"
+
+---
+# local-test 프로필 설정 시작 (새로운 YAML 문서)
+spring:
+  config:
+    activate:
+      # on-profile: local-test
+      on-profile:
+  cloud:
+    openfeign:
+      client:
+        config:
+          storage-service: # 특정 Feign Client 설정
+            enabled: false # [최종 해결책] Feign Client 빈 생성을 명시적으로 비활성화
