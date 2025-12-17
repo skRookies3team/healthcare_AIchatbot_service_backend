@@ -9,5 +9,4 @@ class PetlogApplicationTests {
 	@Test
 	void contextLoads() {
 	}
-
 }
