@@ -1,4 +1,4 @@
-package com.petlog.healthcare; // [수정됨] 패키지명 주의!
+package com.petlog.healthcare; //
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
