@@ -3,7 +3,9 @@ spring:
     import: "optional:file:.env[.properties]"
 
   application:
-    name: healthcare-service#Gateway가 찾을 이름
+    name: healthcare-service   #Gateway가 찾을 이름
+  profiles:
+    active: dev
 
 
   ai:
@@ -22,7 +24,7 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: update #개발: updata, 운영 validate
     show-sql: true
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     properties:
@@ -38,20 +40,31 @@ spring:
           default:
             connectTimeout: 5000 # 연결 시도 제한 시간 (5초)
             readTimeout: 5000    # 응답 대기 제한 시간 (5초)
+  kafka:
+    bootstrap-servers: "${KAFKA_BOOTSTRAP_SERVERS}"
+    consumer:
+      group-id: healthcare-group
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+
+# AWS Bedrock 설정
+aws:
+  bedrock:
+    region: "${AWS_REGION}"
+    access-key: "${AWS_ACCESS_KEY}"
+    secret-key: "${AWS_SECRET_KEY}"
 
 server:
   port: 8085
-
-# === 외부 서비스 URL 설정 (Default Profile) ===
-external:
-  user-service:
-    url: ${USER_SERVICE_URL}
-  pet-service:
-    url: ${PET_SERVICE_URL}
-  notification-service:
-    url: ${NOTIFICATION_SERVICE_URL:http://localhost:8083}
-  storage-service:
-    url: ${STORAGE_SERVICE_URL:http://localhost:8084}
+# Logging
+logging:
+  level:
+    com.petlog.healthcare: DEBUG
+    software.amazon.awssdk: DEBUG
 
 # [수정] springdoc 설정을 default 프로필 영역으로 이동
 springdoc:
@@ -72,4 +85,4 @@ spring:
       client:
         config:
           storage-service: # 특정 Feign Client 설정
-            enabled: false # [최종 해결책] Feign Client 빈 생성을 명시적으로 비활성화
+          enabled: false # [최종 해결책] Feign Client 빈 생성을 명시적으로 비활성화
