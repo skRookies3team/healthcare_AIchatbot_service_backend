@@ -67,7 +67,7 @@ public class DiaryEventConsumer {
      * @param partition Kafka 파티션 번호
      * @param offset Kafka 오프셋 (메시지 위치)
      */
-    @KafkaListener(
+    /* @KafkaListener(
             topics = "diary-events",
             groupId = "healthcare-group"
     )

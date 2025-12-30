@@ -61,10 +61,10 @@ spring:
 # AWS Bedrock 설정
 aws:
   bedrock:
-    region: ${AWS_BEDROCK_REGION:ap-northeast-2}
-    api-key: ${AWS_BEDROCK_API_KEY:BedrockAPIKey-foqn}  # .env에서 로드
-    model-id: ${AWS_BEDROCK_MODEL_ID:anthropic.claude-3-5-haiku-20241022-v1:0}
-    max-tokens: ${AWS_BEDROCK_MAX_TOKENS:1000}
+    region: ${AWS_BEDROCK_REGION:}
+    api-key: ${AWS_BEDROCK_API_KEY}  # .env에서 로드
+    model-id: ${AWS_BEDROCK_MODEL_ID}
+    max-tokens: ${AWS_BEDROCK_MAX_TOKENS}
   titan:
     embedding:
       enabled: true
@@ -88,6 +88,7 @@ server:
 # Logging
 logging:
   level:
+    root: DEBUG
     com.petlog.healthcare: DEBUG
     software.amazon.awssdk: DEBUG
     org.springframework.kafka: INFO

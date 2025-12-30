@@ -68,12 +68,11 @@ dependencies {
     implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
     implementation 'org.springframework.cloud:spring-cloud-starter-loadbalancer'
     // ===== AWS Bedrock SDK =====
-    implementation platform('software.amazon.awssdk:bom:2.21.0')
+    implementation platform('software.amazon.awssdk:bom:2.23.17')
     implementation 'software.amazon.awssdk:auth'
     implementation 'software.amazon.awssdk:bedrockruntime'
     implementation 'software.amazon.awssdk:bedrock'
-    implementation 'software.amazon.awssdk:api-gateway-management-api'  // API Key용
-
+    implementation 'software.amazon.awssdk:apache-client'
     // ===== JSON 처리  =====
     implementation 'com.fasterxml.jackson.core:jackson-databind'
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
@@ -93,6 +92,8 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.kafka:spring-kafka-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    implementation 'software.amazon.awssdk:http-client-spi'
+    implementation 'software.amazon.awssdk:netty-nio-client'
 
     dependencies {
         // 1. 기본 웹 & DB & 모니터링
