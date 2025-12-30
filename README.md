@@ -1,5 +1,5 @@
 # healthcare_service_backend+AI_chatbot_service
-알겠어! 깔끔하게 복사 붙여넣기 가능한 **완성형 README.md** 한 번에 줄게!
+
 
 ***
 
@@ -21,10 +21,10 @@
 
 ### 핵심 가치
 
-- 🤖 **AI 기반 개인화 상담**: Diary 데이터를 RAG로 활용한 맞춤형 건강 조언
-- ⚡ **실시간 스트리밍 응답**: SSE를 통한 ChatGPT 스타일 답변
-- 🔗 **MSA 이벤트 기반**: Kafka를 통한 Diary Service와 느슨한 결합
-- 🎨 **반려동물 페르소나**: 반려동물이 직접 대화하는 듯한 UX
+-  **AI 기반 개인화 상담**: Diary 데이터를 RAG로 활용한 맞춤형 건강 조언
+-  **실시간 스트리밍 응답**: SSE를 통한 ChatGPT 스타일 답변
+-  **MSA 이벤트 기반**: Kafka를 통한 Diary Service와 느슨한 결합
+- **반려동물 페르소나**: 반려동물이 직접 대화하는 듯한 UX
 
 ---
 
@@ -32,10 +32,10 @@
 
 | 기능 | 상태 | 설명 |
 |------|------|------|
-| **Kafka Event Consumer** | ✅ 완료 | Diary Service의 일기 생성 이벤트 수신 |
-| **AI 챗봇 대화** | 🚧 개발 예정 | Spring AI + OpenAI/Bedrock 통합 |
-| **RAG 시스템** | 🚧 개발 예정 | Milvus Vector DB 기반 맥락 검색 |
-| **스트리밍 API** | 🚧 개발 예정 | SSE를 통한 실시간 답변 |
+| **Kafka Event Consumer** | Diary Service의 일기 생성 이벤트 수신 |
+| **AI 챗봇 대화** |  Spring AI + OpenAI/Bedrock 통합 |
+| **RAG 시스템** | Milvus Vector DB 기반 맥락 검색 |
+| **스트리밍 API** | SSE를 통한 실시간 답변 |
 
 ---
 
@@ -208,7 +208,7 @@ git push origin feat#XX/FEATURE_NAME
 
 ---
 
-## 🛠️ 트러블슈팅
+##  트러블슈팅
 
 ### Kafka Consumer 이벤트 수신 안 됨
 ```
@@ -237,7 +237,7 @@ repositories {
 
 ---
 
-## 📌 포트 구성 (MSA)
+##  포트 구성 (MSA)
 
 | Service | Port | Description |
 |---------|------|-------------|
@@ -251,7 +251,7 @@ repositories {
 
 ---
 
-## 🚀 배포
+##  배포
 
 ### Docker 빌드
 ```
