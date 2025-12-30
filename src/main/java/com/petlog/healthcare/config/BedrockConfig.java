@@ -1,61 +1,46 @@
 package com.petlog.healthcare.config;
 
-/**
- * AWS Bedrock 클라이언트 설정 (YAML 변수 치환 방식)
- */
-
-import lombok.extern.slf4j.Slf4j;  // ✅ Slf4j Import
-import org.springframework.beans.factory.annotation.Value;  // ✅ Value Import
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
-import software.amazon.awssdk.auth.credentials.ApiKey;
-import software.amazon.awssdk.auth.credentials.ApiKeyProvider;
-import software.amazon.awssdk.core.client.config.ClientOverrideConfiguration;
-import software.amazon.awssdk.http.urlconnection.UrlConnectionHttpClient;
+import software.amazon.awssdk.http.SdkHttpClient;
+import software.amazon.awssdk.http.apache.ApacheHttpClient;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.bedrockruntime.BedrockRuntimeClient;
 
 import java.time.Duration;
 
-@Slf4j  // ✅ Lombok Slf4j
+@Slf4j
 @Configuration
 public class BedrockConfig {
 
-    /**
-     * YAML → .env 자동 치환 (@Value)
-     */
-    @Value("${aws.bedrock.region}")
+    @Value("${aws.bedrock.region:ap-northeast-2}")
     private String region;
 
     @Value("${aws.bedrock.api-key}")
     private String apiKey;
 
-    @Value("${aws.bedrock.model-id}")
+    @Value("${aws.bedrock.model-id:anthropic.claude-3-5-haiku-20241022-v1:0}")
     private String modelId;
 
     /**
-     * BedrockRuntimeClient Bean (API Key 방식)
+     * BedrockRuntimeClient + API Key HttpClient
+     * 131자 API Key Header 자동 추가 (x-api-key)
      */
     @Bean
-    @Primary
     public BedrockRuntimeClient bedrockRuntimeClient() {
-        log.info("🔥 Bedrock 초기화 - Region: {}, Model: {}", region, modelId);
+        log.info("🔥 Bedrock API Key 클라이언트 초기화 - Region: {}", region);
+
+        SdkHttpClient httpClient = ApacheHttpClient.builder()
+                .maxConnections(50)
+                .connectionTimeout(Duration.ofSeconds(30))
+                .connectionAcquisitionTimeout(Duration.ofSeconds(10))
+                .build();
 
         return BedrockRuntimeClient.builder()
                 .region(Region.of(region))
-                .overrideConfiguration(
-                        ClientOverrideConfiguration.builder()
-                                .addApiKey(ApiKey.builder()
-                                        .name("x-api-key")
-                                        .value(apiKey)
-                                        .build())
-                                .build()
-                )
-                .httpClient(UrlConnectionHttpClient.builder()
-                        .maxConcurrency(20)
-                        .connectionTimeout(Duration.ofSeconds(30))
-                        .build())
+                .httpClient(httpClient)
                 .build();
     }
 }
