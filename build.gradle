@@ -1,18 +1,17 @@
 plugins {
     id 'java'
     id 'org.springframework.boot' version '3.5.7' // 사용자 지정 버전 유지
-    id 'io.spring.dependency-management' version '1.1.7'```
+    id 'io.spring.dependency-management' version '1.1.7'
 }
 
 group = 'com.example'
 version = '0.0.1-SNAPSHOT'
-description = 'Demo project for Spring Boot'
-``
+
 java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(17)
     }
-}`
+}
 
 configurations {
     compileOnly {
@@ -42,14 +41,25 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
+    implementation 'org.postgresql:postgresql'
+    implementation 'io.milvus:milvus-sdk-java:2.3.4'
+
+    // Milvus Vector Store
+    implementation('org.springframework.ai:spring-ai-milvus-store-spring-boot-starter') {
+        exclude group: 'org.slf4j', module: 'slf4j-reload4j'
+        exclude group: 'ch.qos.reload4j', module: 'reload4j'
+    }
 
     // Kafka
     implementation 'org.springframework.kafka:spring-kafka'
-
+    testImplementation 'org.springframework.kafka:spring-kafka-test'
     // JWT
     implementation 'io.jsonwebtoken:jjwt-api:0.12.3'
     implementation 'io.jsonwebtoken:jjwt-impl:0.12.3'
     implementation 'io.jsonwebtoken:jjwt-jackson:0.12.3'
+    // Logging
+    implementation 'org.slf4j:slf4j-api'
 
     // Swagger
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.7.0'
@@ -57,9 +67,17 @@ dependencies {
     // Spring Cloud (Feign & LoadBalancer)
     implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
     implementation 'org.springframework.cloud:spring-cloud-starter-loadbalancer'
+    // ===== AWS Bedrock SDK =====
+    implementation platform('software.amazon.awssdk:bom:2.21.0')
+    implementation 'software.amazon.awssdk:auth'
+    implementation 'software.amazon.awssdk:bedrockruntime'
+    implementation 'software.amazon.awssdk:bedrock'
+    implementation 'software.amazon.awssdk:api-gateway-management-api'  // API Key용
 
+    // ===== JSON 처리  =====
+    implementation 'com.fasterxml.jackson.core:jackson-databind'
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
     // Utility
-    implementation 'me.paulschwarz:spring-dotenv:4.0.0'
     compileOnly 'org.projectlombok:lombok'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     annotationProcessor 'org.projectlombok:lombok'
@@ -67,6 +85,9 @@ dependencies {
     // Databases (PostgreSQL & MariaDB)
     runtimeOnly 'org.postgresql:postgresql:42.7.8' // 버전 명시 유지 & runtimeOnly로 통합
     runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'
+
+    // ===== Configuration Properties  =====
+    annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
 
     // Test
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
@@ -80,10 +101,6 @@ dependencies {
 
         // 2. [개발 편의] P6Spy (쿼리 로그 파라미터 확인용)
         implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.9.0'
-
-        // 3. [핵심] AWS Bedrock (AI 모델 연동)
-        implementation "io.awspring.cloud:spring-cloud-aws-starter-bedrock"
-        implementation "io.awspring.cloud:spring-cloud-aws-starter"
 
         // 4. [필수] JSON 파싱 (Bedrock 응답 처리용)
         implementation 'org.json:json:20231013'
