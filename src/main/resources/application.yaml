@@ -88,3 +88,28 @@ springdoc:
     path: ${SWAGGER_DOCS}
   swagger-ui:
     path: ${SWAGGER_UI}
+
+pet-health:
+  # 네이버 검색 API (필수)
+  naver:
+    client-id: ${NAVER_CLIENT_ID}
+    client-secret: ${NAVER_CLIENT_SECRET}
+
+  # 라이펫 크롤링
+  lifet:
+    base-url: "https://lifet.co.kr"
+    search-path: "/?s="
+
+  # PetMD 크롤링
+  petmd:
+    base-url: "https://www.petmd.com"
+    search-path: "/search?q="
+
+  # RAG 설정
+  rag:
+    # 라이펫 문서 경로 (50개 문서)
+    documents-path: "classpath:rag/lifet_health_docs.json"
+    # 유사도 임계값 (0~1, 높을수록 정확)
+    similarity-threshold: 0.7
+    # 검색 결과 개수
+    top-k: 3
