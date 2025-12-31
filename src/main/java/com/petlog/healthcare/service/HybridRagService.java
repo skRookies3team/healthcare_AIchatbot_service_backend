@@ -1,5 +1,4 @@
 package com.petlog.healthcare.service;
-
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -13,7 +12,7 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
@@ -28,7 +27,7 @@ import java.util.stream.Collectors;
  * 3. ✅ PetMD 실시간 크롤링
  * 4. ✅ 라이펫 실시간 크롤링
  *
- * @author healthcare-team
+ * @author 양승준
  * @since 2025-12-31
  */
 @Slf4j
@@ -159,8 +158,10 @@ public class HybridRagService {
                     double score = calculateSimilarity(query, doc.getContent());
                     return new RankedDocument(doc, score);
                 })
+                // record의 필드에 직접 접근하거나 score() 메서드를 사용합니다.
                 .filter(rd -> rd.score >= similarityThreshold)
-                .sorted(Comparator.comparingDouble(RankedDocument::getScore).reversed())
+                // [수정 포인트] RankedDocument::getScore -> RankedDocument::score
+                .sorted(Comparator.comparingDouble(RankedDocument::score).reversed())
                 .limit(topK)
                 .collect(Collectors.toList());
 
