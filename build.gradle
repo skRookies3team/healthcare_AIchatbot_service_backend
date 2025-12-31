@@ -43,6 +43,13 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
     implementation 'org.postgresql:postgresql'
     implementation 'io.milvus:milvus-sdk-java:2.3.4'
+    implementation 'org.jsoup:jsoup:1.17.2'  // 라이펫 크롤링
+    implementation 'org.apache.lucene:lucene-core:9.9.1' // 🔥 텍스트 유사도 계산
+    implementation 'org.apache.lucene:lucene-analysis-common:9.9.1'
+
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'  // 비동기 API
+
+
 
     // Milvus Vector Store
     implementation('org.springframework.ai:spring-ai-milvus-store-spring-boot-starter') {
