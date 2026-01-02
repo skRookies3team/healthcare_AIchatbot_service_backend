@@ -1,17 +1,16 @@
-package com.petlog.record.exception.advice;
+package com.petlog.healthcare.exception.advice;
 
 
-import com.petlog.record.exception.*;
-
+import com.petlog.healthcare.exception.*;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import com.petlog.record.exception.UnauthorizedException; // [추가]
+import com.petlog.healthcare.exception.UnauthorizedException; // [추가]
 import org.springframework.web.multipart.support.MissingServletRequestPartException;
-import org.springframework.web.reactive.resource.NoResourceFoundException;
 
 import java.nio.file.AccessDeniedException;
 import java.time.LocalDateTime;
@@ -199,6 +198,15 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
     }
 
+    /**
+     * [추가] 정적 리소스(favicon.ico 등)를 찾지 못했을 때 발생하는 예외 처리
+     * 이 예외를 따로 잡지 않으면 GlobalExceptionHandler의 Exception 핸들러가 ERROR 로그를 남깁니다.
+     */
+    @ExceptionHandler(NoResourceFoundException.class)
+    public ResponseEntity<Void> handleNoResourceFoundException(NoResourceFoundException e) {
+        // 에러 로그를 남기지 않고 404(Not Found) 상태코드만 반환합니다.
+        return ResponseEntity.notFound().build();
+    }
     /**
      * [추가] 필수 Request Part 누락 (파일 업로드 등)
      */
