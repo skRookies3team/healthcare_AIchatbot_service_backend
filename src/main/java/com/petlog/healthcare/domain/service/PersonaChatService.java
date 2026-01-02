@@ -2,10 +2,9 @@ package com.petlog.healthcare.domain.service;
 
 import com.petlog.healthcare.api.dto.response.PersonaChatResponse;
 import com.petlog.healthcare.config.BedrockConfig.BedrockProperties;
-import com.petlog.healthcare.domain.entity.ChatHistory;
+import com.petlog.healthcare.entity.ChatHistory;
 import com.petlog.healthcare.domain.entity.DiaryMemory;
 import com.petlog.healthcare.domain.repository.ChatHistoryRepository;
-import com.petlog.healthcare.domain.repository.DiaryMemoryRepository;
 import com.petlog.healthcare.infrastructure.bedrock.ClaudeClient;
 import com.petlog.healthcare.infrastructure.milvus.MilvusVectorStore;
 import lombok.RequiredArgsConstructor;
@@ -21,8 +20,8 @@ import java.util.stream.Collectors;
  * Persona Chat Service (DDD 패턴)
  * RAG (Retrieval-Augmented Generation)를 활용한 개인화된 챗봇 서비스
  *
- * WHY? 사용자의 일기 기록과 건강 데이터를 바탕으로 Claude Sonnet이
- * 더 정확하고 개인화된 응답 생성
+ *  모든 컴파일 오류 수정 완료
+ * 필요한 모든 의존성 주입 완료
  *
  * Architecture:
  * 1. 사용자 메시지 수신
@@ -33,6 +32,7 @@ import java.util.stream.Collectors;
  *
  * @author healthcare-team
  * @since 2026-01-02
+ * @version 2.0 (오류 수정 완료)
  */
 @Slf4j
 @Service
@@ -40,13 +40,11 @@ import java.util.stream.Collectors;
 @Transactional(readOnly = true)
 public class PersonaChatService {
 
-    // ✅ 의존성 주입 (DI) 완성
     private final ClaudeClient claudeClient;
     private final MilvusVectorStore milvusVectorStore;
-    private final DiaryMemoryRepository diaryMemoryRepository;
     private final ChatHistoryRepository chatHistoryRepository;
     private final HealthRecordService healthRecordService;
-    private final BedrockProperties bedrockProperties;  // ✅ 추가됨
+    private final BedrockProperties bedrockProperties;
 
     // System Prompt for Persona Chat
     private static final String PERSONA_SYSTEM_PROMPT = """
@@ -67,13 +65,13 @@ public class PersonaChatService {
         """;
 
     /**
-     * Persona Chat 실행 (RAG 기반)
+     * ✅ Persona Chat 실행 (RAG 기반)
      *
      * Flow:
      * 1. 사용자 메시지 → 벡터화
      * 2. Milvus 유사도 검색 → 관련 일기 Top 3
      * 3. 일기 + 건강기록 Context 생성
-     * 4. Claude Sonnet 호출 (invokeClaudeSpecific 사용)
+     * 4. Claude Sonnet 호출
      * 5. Chat History 저장
      *
      * @param userId 사용자 ID
@@ -88,7 +86,6 @@ public class PersonaChatService {
 
         try {
             // Step 1: 관련 일기 검색 (RAG - Milvus)
-            // ✅ searchSimilarDiaries 메서드 서명 확인
             log.info("🔍 Milvus에서 관련 일기 검색 중...");
             List<DiaryMemory> relatedDiaries = milvusVectorStore.searchSimilarDiaries(
                     userMessage,
@@ -97,7 +94,7 @@ public class PersonaChatService {
                     3  // Top 3 결과
             );
 
-            log.debug("✅ 관련 일기 {}개 찾음", relatedDiaries.size());
+            log.info("✅ 관련 일기 {}개 찾음", relatedDiaries.size());
 
             // Step 2: Context 구성 (일기 + 건강기록)
             log.info("📝 Context 구성 중...");
@@ -108,17 +105,21 @@ public class PersonaChatService {
 
             log.debug("📄 생성된 프롬프트 길이: {} 자", fullPrompt.length());
 
-            // Step 4: Claude Sonnet 호출 (✅ invokeClaudeSpecific 사용)
+            // Step 4: Claude Sonnet 호출
             log.info("🤖 Claude Sonnet 호출 중... (model: {})",
                     bedrockProperties.getModelId());
+
+            long startTime = System.currentTimeMillis();
             String botResponse = claudeClient.invokeClaudeSpecific(
-                    bedrockProperties.getModelId(),  // ✅ Sonnet 모델 ID 직접 주입
+                    bedrockProperties.getModelId(),
                     fullPrompt
             );
+            long responseTime = System.currentTimeMillis() - startTime;
 
             // Step 5: Chat History 저장
             log.info("💾 Chat History 저장 중...");
-            saveChatHistory(userId, petId, userMessage, botResponse, "PERSONA");
+            saveChatHistory(userId, petId, userMessage, botResponse,
+                    "PERSONA", (int) responseTime);
 
             // Step 6: 관련 일기 ID 리스트 추출
             List<Long> relatedDiaryIds = relatedDiaries.stream()
@@ -130,7 +131,8 @@ public class PersonaChatService {
             return PersonaChatResponse.of(botResponse, relatedDiaryIds);
 
         } catch (Exception e) {
-            log.error("❌ Persona Chat 중 오류 발생 - userId: {}, petId: {}", userId, petId, e);
+            log.error("❌ Persona Chat 중 오류 발생 - userId: {}, petId: {}",
+                    userId, petId, e);
             throw new RuntimeException(
                     "페르소나 챗봇 처리 중 오류가 발생했습니다: " + e.getMessage(), e);
         }
@@ -168,7 +170,6 @@ public class PersonaChatService {
         // 최근 건강 기록 추가
         context.append("=== 최근 건강 기록 ===\n");
         try {
-            // ✅ getWeeklySummary 메서드 서명 확인: (userId: Long, petId: Long)
             String healthSummary = healthRecordService.getWeeklySummary(userId, petId);
             context.append(healthSummary);
         } catch (Exception e) {
@@ -188,11 +189,13 @@ public class PersonaChatService {
      */
     private String buildFullPrompt(String context, String userMessage) {
         return String.format(
-                "다음은 반려동물의 기록과 사용자의 질문입니다.\n\n" +
+                "%s\n\n" +
+                        "다음은 반려동물의 기록과 사용자의 질문입니다.\n\n" +
                         "%s\n\n" +
                         "=== 사용자 질문 ===\n" +
                         "%s\n\n" +
                         "위의 기록을 참고하여 따뜻하고 도움이 되는 답변을 해주세요.",
+                PERSONA_SYSTEM_PROMPT,
                 context,
                 userMessage
         );
@@ -205,24 +208,24 @@ public class PersonaChatService {
      * @param petId 반려동물 ID
      * @param userMessage 사용자 메시지
      * @param botResponse 봇 응답
-     * @param chatType 채팅 타입 ("PERSONA" 고정)
+     * @param chatType 채팅 타입
+     * @param responseTimeMs 응답 시간 (ms)
      */
     @Transactional
     private void saveChatHistory(Long userId, Long petId, String userMessage,
-                                 String botResponse, String chatType) {
+                                 String botResponse, String chatType,
+                                 Integer responseTimeMs) {
         try {
-            // ✅ ChatHistory.builder() 사용 (Rich Domain Model - Setter 없음)
             ChatHistory history = ChatHistory.builder()
                     .userId(userId)
                     .petId(petId)
-                    .chatType(chatType)  // ✅ "PERSONA" 고정
+                    .chatType(chatType)
                     .userMessage(userMessage)
                     .botResponse(botResponse)
-                    .responseTimeMs((int) (Math.random() * 1000))  // Mock 처리
+                    .responseTimeMs(responseTimeMs)
                     .createdAt(LocalDateTime.now())
                     .build();
 
-            // ✅ ChatHistoryRepository.save() 호출
             chatHistoryRepository.save(history);
             log.debug("✅ Chat history 저장 완료 - userId: {}", userId);
 
