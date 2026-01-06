@@ -20,10 +20,19 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-@ConditionalOnProperty(name = "kafka.enabled", havingValue = "true", matchIfMissing = false)
+@ConditionalOnProperty(name = "spring.kafka.enabled", havingValue = "true", matchIfMissing = false)
 public class DiaryEventConsumer {
 
     private final DiaryVectorService diaryVectorService;
+
+    @jakarta.annotation.PostConstruct
+    public void init() {
+        log.info("═══════════════════════════════════════");
+        log.info("📢 [Kafka] DiaryEventConsumer 시작됨!");
+        log.info("   Topic: diary-events");
+        log.info("   Group: healthcare-group");
+        log.info("═══════════════════════════════════════");
+    }
 
     @KafkaListener(topics = "diary-events", groupId = "healthcare-group", containerFactory = "kafkaListenerContainerFactory")
     public void consume(

@@ -20,7 +20,7 @@ spring:
             readTimeout: 5000
 
   kafka:
-    enabled: false  # true로 변경하면 Kafka 활성화
+    enabled: true  # true로 변경하면 Kafka 활성화
     bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
     consumer:
       group-id: healthcare-group
