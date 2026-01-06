@@ -40,21 +40,22 @@ public class MilvusDiaryRepository {
      */
     public void insert(Long diaryId, float[] embedding, Map<String, Object> metadata) {
         try {
-            // diaryId를 metadata에 포함
-            metadata.put("diaryId", diaryId);
-
-            // 필드 데이터 준비 (id 제외 - 자동 생성)
+            // 필드 데이터 준비 (안전한 타입 변환)
+            List<Long> diaryIds = Collections.singletonList(diaryId);
+            List<Long> userIds = Collections.singletonList(toLong(metadata.get("userId")));
+            List<Long> petIds = Collections.singletonList(toLong(metadata.get("petId")));
             List<List<Float>> embeddings = Collections.singletonList(toList(embedding));
-            List<String> contents = Collections.singletonList((String) metadata.get("content"));
-            List<String> metadataJsons = Collections.singletonList(toJson(metadata));
+            List<String> contents = Collections.singletonList(String.valueOf(metadata.get("content")));
 
-            // Insert 파라미터 구성 (id 필드 제외)
+            // Insert 파라미터 구성 (Milvus 스키마에 맞춤)
             InsertParam insertParam = InsertParam.newBuilder()
                     .withCollectionName(COLLECTION_NAME)
                     .withFields(Arrays.asList(
+                            new InsertParam.Field("diary_id", diaryIds),
+                            new InsertParam.Field("user_id", userIds),
+                            new InsertParam.Field("pet_id", petIds),
                             new InsertParam.Field("embedding", embeddings),
-                            new InsertParam.Field("content", contents),
-                            new InsertParam.Field("metadata", metadataJsons)))
+                            new InsertParam.Field("content", contents)))
                     .build();
 
             // 저장 실행
@@ -119,5 +120,18 @@ public class MilvusDiaryRepository {
         } catch (Exception e) {
             return "{}";
         }
+    }
+
+    /**
+     * Object → Long 안전 변환 (String, Number 모두 처리)
+     */
+    private Long toLong(Object value) {
+        if (value == null) {
+            return 0L;
+        }
+        if (value instanceof Number) {
+            return ((Number) value).longValue();
+        }
+        return Long.parseLong(value.toString());
     }
 }
