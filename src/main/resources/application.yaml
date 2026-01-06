@@ -19,8 +19,8 @@ spring:
             connectTimeout: 5000
             readTimeout: 5000
 
+  # Kafka 설정
   kafka:
-    enabled: true  # true로 변경하면 Kafka 활성화
     bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
     consumer:
       group-id: healthcare-group
@@ -36,6 +36,10 @@ spring:
       value-serializer: org.apache.kafka.common.serialization.StringSerializer
     listener:
       ack-mode: manual
+
+# Kafka Consumer 활성화 설정 (별도 설정)
+kafka:
+  enabled: true  # true = Kafka Consumer 활성화
 
 # 로직 관련 정적 설정
 pet-health:

@@ -11,110 +11,77 @@ import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 
 /**
- * AWS Bedrock Dual Models (Sonnet + Haiku) 최적화 설정
+ * AWS Bedrock 설정
  *
- * 기본: Sonnet (anthropic.claude-3-5-sonnet-20240620-v1:0)
- * 빠른: Haiku (anthropic.claude-haiku-4-5-20251001-v1:0)
- * 리전: ap-northeast-2 (한국)
- * 인증: Long-term API Key + StaticCredentials
+ * ⚠️ 필수 환경변수:
+ * - AWS_ACCESS_KEY_ID: IAM 사용자의 Access Key ID (AKIA...)
+ * - AWS_SECRET_ACCESS_KEY: IAM 사용자의 Secret Access Key
+ * - AWS_BEDROCK_REGION: us-east-1 권장
  *
  * @author healthcare-team
- * @since 2026-01-02
+ * @since 2026-01-07
  */
 @Slf4j
 @Configuration
 public class BedrockConfig {
 
-    @Value("${AWS_BEDROCK_API_KEY}")
-    private String apiKey;
+    @Value("${AWS_ACCESS_KEY_ID:}")
+    private String accessKeyId;
 
-    @Value("${AWS_BEDROCK_REGION}")
+    @Value("${AWS_SECRET_ACCESS_KEY:}")
+    private String secretAccessKey;
+
+    @Value("${AWS_BEDROCK_REGION:us-east-1}")
     private String region;
 
-    @Value("${AWS_BEDROCK_MODEL_ID}")
-    private String modelId;  // Sonnet (기본)
+    @Value("${AWS_BEDROCK_MODEL_ID:anthropic.claude-3-5-sonnet-20240620-v1:0}")
+    private String modelId;
 
-    @Value("${AWS_BEDROCK_HAIKU_MODEL_ID}")
-    private String haikuModelId;  // Haiku
+    @Value("${AWS_BEDROCK_HAIKU_MODEL_ID:anthropic.claude-3-haiku-20240307-v1:0}")
+    private String haikuModelId;
 
     @Value("${AWS_BEDROCK_MAX_TOKENS:2000}")
     private int maxTokens;
 
-    /**
-     * 🚀 Bedrock 설정 검증 + Properties 반환
-     * 당신의 기존 로직 완전 유지
-     */
     @Bean
     public BedrockProperties bedrockProperties() {
         log.info("===========================================");
-        log.info(" 🔥 Bedrock Dual Models 설정 완료");
+        log.info(" 🔥 Bedrock 설정");
         log.info("===========================================");
-        log.info("   Region: {} (한국 리전)", region);
-        log.info("   🧠 Sonnet: {}", modelId);
-        log.info("   ⚡ Haiku: {}", haikuModelId);
-        log.info("   Max Tokens: {}", maxTokens);
-        log.info("   API Key: {}...", apiKey != null && apiKey.length() > 10
-                ? apiKey.substring(0, 10) : "❌ NOT SET");
+        log.info("   Region: {}", region);
+        log.info("   Sonnet: {}", modelId);
+        log.info("   Haiku: {}", haikuModelId);
+        log.info("   Access Key ID: {}",
+                accessKeyId != null && accessKeyId.length() > 8
+                        ? accessKeyId.substring(0, 8) + "..."
+                        : "❌ 미설정");
+        log.info("   Secret Access Key: {}",
+                secretAccessKey != null && !secretAccessKey.isEmpty()
+                        ? "****설정됨****"
+                        : "❌ 미설정");
         log.info("===========================================");
 
-        // 🔍 기존 검증 로직 완전 유지
-        validateApiKey();
-        validateRegion();
-        validateModels();
+        if (accessKeyId == null || accessKeyId.isEmpty()) {
+            log.error("❌ AWS_ACCESS_KEY_ID 환경변수를 설정하세요!");
+            log.error("   IntelliJ: Run > Edit Configurations > Environment variables");
+        }
+        if (secretAccessKey == null || secretAccessKey.isEmpty()) {
+            log.error("❌ AWS_SECRET_ACCESS_KEY 환경변수를 설정하세요!");
+        }
 
-        log.info("✅ Bedrock Dual Models 검증 완료!");
-        return new BedrockProperties(apiKey, region, modelId, haikuModelId, maxTokens);
+        return new BedrockProperties(accessKeyId, region, modelId, haikuModelId, maxTokens);
     }
 
-    /**
-     * 🛡️ 당신의 기존 API 키 검증 로직 - 완전 복사
-     */
-    private void validateApiKey() {
-        if (apiKey == null || apiKey.isBlank()) {
-            log.error("❌ AWS_BEDROCK_API_KEY가 설정되지 않았습니다!");
-            log.error("   .env 파일을 확인해주세요.");
-            throw new IllegalStateException("AWS_BEDROCK_API_KEY가 설정되지 않았습니다. .env 파일을 확인해주세요.");
-        }
-        if (apiKey.length() < 100) {
-            log.warn("⚠️ API 키 길이가 {}자로 짧습니다. 올바른 Bedrock API 키인지 확인해주세요.", apiKey.length());
-        }
-    }
-
-    /**
-     * 🗺️ 당신의 기존 리전 검증 - 완전 복사
-     */
-    private void validateRegion() {
-        if (!"ap-northeast-2".equals(region)) {
-            log.warn("⚠️ 예상하지 못한 리전입니다. 현재: {}, 예상: ap-northeast-2", region);
-        }
-    }
-
-    /**
-     * 🎯 Dual 모델 검증 - 신규 추가
-     */
-    private void validateModels() {
-        if (!modelId.contains("sonnet")) {
-            log.warn("⚠️ Sonnet 모델 ID 확인: {}", modelId);
-        }
-        if (!haikuModelId.contains("haiku")) {
-            log.warn("⚠️ Haiku 모델 ID 확인: {}", haikuModelId);
-        }
-    }
-
-    /**
-     * BedrockProperties 내부 클래스
-     * 당신의 기존 구조 유지 + Haiku 추가
-     */
     @Getter
     public static class BedrockProperties {
         private final String apiKey;
         private final String region;
-        private final String modelId;      // Sonnet
-        private final String haikuModelId; // Haiku
+        private final String modelId;
+        private final String haikuModelId;
         private final int maxTokens;
 
         public BedrockProperties(String apiKey, String region, String modelId,
-                                 String haikuModelId, int maxTokens) {
+                String haikuModelId, int maxTokens) {
             this.apiKey = apiKey;
             this.region = region;
             this.modelId = modelId;
@@ -123,24 +90,26 @@ public class BedrockConfig {
         }
     }
 
-    /**
-     * 🌟 BedrockRuntimeClient - 당신의 기존 코드 완전 복사 + Dual Models 지원
-     * StaticCredentialsProvider로 API 키 처리
-     * 싱글톤 Bean으로 효율적 관리
-     */
     @Bean
     public BedrockRuntimeClient bedrockRuntimeClient() {
-        log.info("🏭 BedrockRuntimeClient 생성 중...");
+        log.info("� BedrockRuntimeClient 생성");
+
+        if (accessKeyId == null || accessKeyId.isEmpty() ||
+                secretAccessKey == null || secretAccessKey.isEmpty()) {
+            log.error("⛔ AWS 자격 증명 미설정!");
+            log.error("   다음 환경변수를 설정하세요:");
+            log.error("   - AWS_ACCESS_KEY_ID=AKIA...");
+            log.error("   - AWS_SECRET_ACCESS_KEY=...");
+            throw new IllegalStateException("AWS 자격 증명이 설정되지 않았습니다.");
+        }
+
+        log.info("   ✅ Access Key ID: {}...", accessKeyId.substring(0, 8));
+        log.info("   ✅ Region: {}", region);
 
         return BedrockRuntimeClient.builder()
                 .region(Region.of(region))
-                // 🔑 Long-term API Key → StaticCredentials 변환 (당신의 기존 방식)
                 .credentialsProvider(StaticCredentialsProvider.create(
-                        AwsBasicCredentials.create(
-                                apiKey,  // API Key as Access Key
-                                "bedrock-long-term-secret"  // Dummy Secret (Bedrock API Key 방식)
-                        )
-                ))
+                        AwsBasicCredentials.create(accessKeyId, secretAccessKey)))
                 .build();
     }
 }

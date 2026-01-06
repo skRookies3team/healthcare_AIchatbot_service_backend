@@ -34,35 +34,39 @@ public class MilvusDiaryRepository {
     /**
      * Diary 벡터 저장
      *
-     * @param diaryId Diary ID
+     * @param diaryId   Diary ID
      * @param embedding 1024차원 벡터 (Titan Embeddings)
-     * @param metadata 메타데이터 (userId, petId, content 등)
+     * @param metadata  메타데이터 (userId, petId, content 등)
      */
     public void insert(Long diaryId, float[] embedding, Map<String, Object> metadata) {
         try {
-            // 필드 데이터 준비
-            List<Long> ids = Collections.singletonList(diaryId);
+            // diaryId를 metadata에 포함
+            metadata.put("diaryId", diaryId);
+
+            // 필드 데이터 준비 (id 제외 - 자동 생성)
             List<List<Float>> embeddings = Collections.singletonList(toList(embedding));
             List<String> contents = Collections.singletonList((String) metadata.get("content"));
             List<String> metadataJsons = Collections.singletonList(toJson(metadata));
 
-            // Insert 파라미터 구성
+            // Insert 파라미터 구성 (id 필드 제외)
             InsertParam insertParam = InsertParam.newBuilder()
                     .withCollectionName(COLLECTION_NAME)
                     .withFields(Arrays.asList(
-                            new InsertParam.Field("id", ids),
                             new InsertParam.Field("embedding", embeddings),
                             new InsertParam.Field("content", contents),
-                            new InsertParam.Field("metadata", metadataJsons)
-                    ))
+                            new InsertParam.Field("metadata", metadataJsons)))
                     .build();
 
             // 저장 실행
-            MutationResult result = milvusClient.insert(insertParam).getData();
-            MutationResultWrapper wrapper = new MutationResultWrapper(result);
+            var response = milvusClient.insert(insertParam);
 
-            log.info("✅ Milvus 저장 완료 - diaryId: {}, insertCount: {}",
-                    diaryId, wrapper.getInsertCount());
+            if (response.getStatus() != io.milvus.param.R.Status.Success.getCode()) {
+                log.error("❌ Milvus 저장 실패 - status: {}, msg: {}",
+                        response.getStatus(), response.getMessage());
+                throw new RuntimeException("Milvus 저장 실패: " + response.getMessage());
+            }
+
+            log.info("✅ Milvus 저장 완료 - diaryId: {}", diaryId);
 
         } catch (Exception e) {
             log.error("❌ Milvus 저장 실패 - diaryId: {}", diaryId, e);
