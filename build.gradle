@@ -1,0 +1,132 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.4.1' // 사용자 지정 버전 유지
+    id 'io.spring.dependency-management' version '1.1.7'
+}
+
+group = 'com.example'
+version = '0.0.1-SNAPSHOT'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+repositories {
+    mavenCentral()
+    // [중요] Spring AI Milestone 버전을 다운로드하기 위한 저장소
+    maven { url 'https://repo.spring.io/milestone' }
+}
+
+// [1] 버전 변수 설정 (Cloud & AI 통합)
+ext {
+    springCloudVersion = "2024.0.0"
+    springAiVersion = "1.0.0-M4"
+}
+
+dependencies {
+    // [2] Spring AI OpenAI Starter
+    implementation 'org.springframework.ai:spring-ai-openai-spring-boot-starter'
+
+    // Spring Boot Starters
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
+    implementation 'org.postgresql:postgresql'
+    implementation 'io.milvus:milvus-sdk-java:2.3.4'
+    implementation 'org.jsoup:jsoup:1.17.2'  // 라이펫 크롤링
+    implementation 'org.apache.lucene:lucene-core:9.9.1' // 🔥 텍스트 유사도 계산
+    implementation 'org.apache.lucene:lucene-analysis-common:9.9.1'
+
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'  // 비동기 API
+
+
+
+    // Milvus Vector Store
+    implementation('org.springframework.ai:spring-ai-milvus-store-spring-boot-starter') {
+        exclude group: 'org.slf4j', module: 'slf4j-reload4j'
+        exclude group: 'ch.qos.reload4j', module: 'reload4j'
+    }
+
+    // Kafka
+    implementation 'org.springframework.kafka:spring-kafka'
+    testImplementation 'org.springframework.kafka:spring-kafka-test'
+    // JWT
+    implementation 'io.jsonwebtoken:jjwt-api:0.12.3'
+    implementation 'io.jsonwebtoken:jjwt-impl:0.12.3'
+    implementation 'io.jsonwebtoken:jjwt-jackson:0.12.3'
+    // Logging
+    implementation 'org.slf4j:slf4j-api'
+
+    // Swagger
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.7.0'
+
+    // Spring Cloud (Feign & LoadBalancer)
+    implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
+    implementation 'org.springframework.cloud:spring-cloud-starter-loadbalancer'
+    // ===== AWS Bedrock SDK =====
+    implementation platform('software.amazon.awssdk:bom:2.23.17')
+    implementation 'software.amazon.awssdk:auth'
+    implementation 'software.amazon.awssdk:bedrockruntime'
+    implementation 'software.amazon.awssdk:s3'  // S3 이미지 저장
+    implementation 'software.amazon.awssdk:bedrock'
+    implementation 'software.amazon.awssdk:apache-client'
+    // ===== JSON 처리  =====
+    implementation 'com.fasterxml.jackson.core:jackson-databind'
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
+    // OkHttp for reliable multipart/form-data requests (OpenAI Whisper)
+    implementation 'com.squareup.okhttp3:okhttp:4.12.0'
+    // Utility
+    compileOnly 'org.projectlombok:lombok'
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+    annotationProcessor 'org.projectlombok:lombok'
+
+    // Databases (PostgreSQL & MariaDB)
+    runtimeOnly 'org.postgresql:postgresql:42.7.8' // 버전 명시 유지 & runtimeOnly로 통합
+    runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'
+
+    // ===== Configuration Properties  =====
+    annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+
+    // Test
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.kafka:spring-kafka-test'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    implementation 'software.amazon.awssdk:http-client-spi'
+    implementation 'software.amazon.awssdk:netty-nio-client'
+
+    dependencies {
+        // 1. 기본 웹 & DB & 모니터링
+        implementation 'org.springframework.boot:spring-boot-starter-actuator' // [Why] 헬스체크용
+        runtimeOnly 'org.postgresql:postgresql'
+
+        // 2. [개발 편의] P6Spy (쿼리 로그 파라미터 확인용)
+        implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.9.0'
+
+        // 4. [필수] JSON 파싱 (Bedrock 응답 처리용)
+        implementation 'org.json:json:20231013'
+
+    }
+}
+
+// [3] Dependency Management (Cloud & AI BOM 통합)
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+        mavenBom "org.springframework.ai:spring-ai-bom:${springAiVersion}"
+    }
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}

@@ -1,0 +1,70 @@
+server:
+  port: 8085
+
+spring:
+  application:
+    name: healthcare-service
+  profiles:
+    active: dev # 기본 프로필 설정
+
+  config:
+    import: "optional:file:.env[.properties]" # 환경 변수 로드
+
+  # Multipart 파일 업로드 설정 (OpenAI Whisper 최대 25MB 지원)
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 25MB
+      max-request-size: 30MB
+
+  # 인프라 공통 설정
+  cloud:
+    openfeign:
+      client:
+        config:
+          default:
+            connectTimeout: 5000
+            readTimeout: 5000
+
+  # Kafka 설정
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    consumer:
+      group-id: healthcare-group
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      auto-offset-reset: earliest
+      enable-auto-commit: false
+      properties:
+        spring.json.trusted.packages: "*"
+        spring.json.type.mapping: "diaryEvent:com.petlog.healthcare.dto.event.DiaryEventMessage"
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+    listener:
+      ack-mode: manual
+
+# Kafka Consumer 활성화 설정 (별도 설정)
+kafka:
+  enabled: false  # true = Kafka Consumer 활성화
+
+# 로직 관련 정적 설정
+pet-health:
+  lifet:
+    base-url: "https://lifet.co.kr"
+    search-path: "/?s="
+  petmd:
+    base-url: "https://www.petmd.com"
+    search-path: "/search?q="
+  rag:
+    documents-path: "classpath:rag/lifet_health_docs.json"
+
+logging:
+  level:
+    root: INFO
+    com.petlog.healthcare: DEBUG
+
+# Meshy.ai 설정 (Primary - 3D 모델 생성)
+meshy:
+  api-key: ${MESHY_API_KEY:}
+  base-url: https://api.meshy.ai

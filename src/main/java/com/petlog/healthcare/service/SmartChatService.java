@@ -1,0 +1,308 @@
+package com.petlog.healthcare.service;
+
+import com.petlog.healthcare.dto.hospital.HospitalResponse;
+import com.petlog.healthcare.dto.hospital.HospitalResponse.HospitalInfo;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Pattern;
+
+/**
+ * 스마트 챗봇 서비스
+ *
+ * 사용자 질문을 분석하여 적절한 기능으로 라우팅
+ * - 피부 관련 질문 → 피부질환 탐지 안내
+ * - 병원 관련 질문 → 동물병원 검색 결과 포함
+ * - 일반 질문 → ⭐ RAG 기반 수의사 지식 검색 후 응답
+ *
+ * @author healthcare-team
+ * @since 2026-01-07
+ */
+@Slf4j
+@Service
+@RequiredArgsConstructor
+public class SmartChatService {
+
+    private final ClaudeService claudeService;
+    private final HospitalService hospitalService;
+    private final VetKnowledgeSearchService vetKnowledgeSearchService; // ⭐ RAG 서비스
+
+    // 피부 관련 키워드
+    private static final Pattern SKIN_PATTERN = Pattern.compile(
+            "(피부|피부병|피부질환|습진|탈모|털빠짐|가려움|긁|붉|발진|" +
+                    "미란|결절|궤양|비듬|딱지|상처|염증|알러지|알레르기|" +
+                    "두드러기|무좀|진드기|벼룩|기생충|곰팡이|핫스팟)",
+            Pattern.CASE_INSENSITIVE);
+
+    // 병원 관련 키워드
+    private static final Pattern HOSPITAL_PATTERN = Pattern.compile(
+            "(병원|동물병원|수의사|진료|응급|24시|야간|가까운|근처|주변|" +
+                    "어디|찾|검색|추천|소개|연락처|전화|위치)",
+            Pattern.CASE_INSENSITIVE);
+
+    // 지역명 패턴
+    private static final Pattern REGION_PATTERN = Pattern.compile(
+            "(서울|부산|대구|인천|광주|대전|울산|세종|경기|강원|충북|충남|" +
+                    "전북|전남|경북|경남|제주|강남|강북|송파|마포|용산|종로|" +
+                    "서초|영등포|성동|광진|동대문|중랑|성북|강서|양천|구로|" +
+                    "금천|관악|동작|노원|도봉|은평|[가-힣]+구|[가-힣]+시)",
+            Pattern.CASE_INSENSITIVE);
+
+    // ⭐ 진료과 감지 패턴
+    private static final Pattern INTERNAL_PATTERN = Pattern.compile(
+            "(구토|설사|변비|식욕|소화|위장|간|신장|당뇨|췌장|심장|호흡|기침|" +
+                    "재채기|콧물|열|발열|무기력|식이|먹|토|배|복통|장염|요로)",
+            Pattern.CASE_INSENSITIVE);
+
+    private static final Pattern EYE_PATTERN = Pattern.compile(
+            "(눈|눈물|충혈|눈곱|각막|백내장|녹내장|안구|시력|눈부심|결막)",
+            Pattern.CASE_INSENSITIVE);
+
+    private static final Pattern DENTAL_PATTERN = Pattern.compile(
+            "(이빨|이|치아|잇몸|입냄새|구취|치석|구강|입|치주|발치)",
+            Pattern.CASE_INSENSITIVE);
+
+    /**
+     * 스마트 챗봇 - 의도 감지 후 적절한 응답 생성
+     *
+     * @param message 사용자 메시지
+     * @return 스마트 응답 (기능 연동 포함)
+     */
+    public Map<String, Object> smartChat(String message) {
+        log.info("🧠 [스마트 챗봇] 의도 분석: {}", truncate(message, 50));
+
+        // 1. 피부 관련 질문 감지
+        if (isSkinRelated(message)) {
+            log.info("🔬 피부 관련 질문 감지");
+            return handleSkinQuery(message);
+        }
+
+        // 2. 병원 관련 질문 감지
+        if (isHospitalRelated(message)) {
+            log.info("🏥 병원 관련 질문 감지");
+            return handleHospitalQuery(message);
+        }
+
+        // 3. 일반 질문 - 기존 수의사 모드
+        log.info("💬 일반 건강 상담");
+        return handleGeneralQuery(message);
+    }
+
+    /**
+     * 피부 관련 질문 처리
+     */
+    private Map<String, Object> handleSkinQuery(String message) {
+        // 일반 수의사 응답 + 피부질환 탐지 안내
+        String baseResponse = claudeService.chat(message);
+
+        String enhancedResponse = baseResponse + "\n\n" +
+                "---\n" +
+                "💡 **피부질환 AI 분석 기능**\n" +
+                "반려동물의 피부 사진을 업로드하시면 AI가 분석해드립니다.\n" +
+                "📸 `POST /api/skin-disease/analyze` 에서 이미지를 업로드하세요.\n" +
+                "\n" +
+                "⚠️ AI 분석은 참고용이며, 정확한 진단은 수의사와 상담하세요.";
+
+        return Map.of(
+                "success", true,
+                "intent", "SKIN_DISEASE",
+                "response", enhancedResponse,
+                "features", Map.of(
+                        "skinDiseaseAnalysis", true,
+                        "endpoint", "/api/skin-disease/analyze",
+                        "method", "POST",
+                        "description", "피부 사진 업로드하여 AI 분석 받기"));
+    }
+
+    /**
+     * 병원 관련 질문 처리
+     */
+    private Map<String, Object> handleHospitalQuery(String message) {
+        // 지역 추출
+        String region = extractRegion(message);
+
+        // 병원 검색
+        HospitalResponse hospitals;
+        if (region != null) {
+            log.info("   🗺️ 지역 감지: {}", region);
+            hospitals = hospitalService.findByRegion(region);
+        } else {
+            // 지역 미지정 시 응급 병원 또는 기본 검색
+            if (message.contains("응급") || message.contains("24시")) {
+                hospitals = hospitalService.findEmergencyHospitals();
+            } else {
+                hospitals = hospitalService.findNearbyHospitals(37.5, 127.0, 10);
+            }
+        }
+
+        // 병원 정보 텍스트 생성
+        String hospitalInfo = formatHospitalList(hospitals.getHospitals());
+
+        // 응답 생성
+        String response = buildHospitalResponse(message, region, hospitalInfo);
+
+        return Map.of(
+                "success", true,
+                "intent", "HOSPITAL_SEARCH",
+                "response", response,
+                "hospitals", hospitals.getHospitals().stream().limit(5).toList(),
+                "totalCount", hospitals.getTotalCount(),
+                "features", Map.of(
+                        "hospitalSearch", true,
+                        "nearbyEndpoint", "/api/hospital/nearby",
+                        "searchEndpoint", "/api/hospital/search"));
+    }
+
+    /**
+     * ⭐ 일반 건강 질문 처리 (RAG 기반)
+     *
+     * 관련 수의사 지식 베이스를 검색하여 컨텍스트로 활용
+     */
+    private Map<String, Object> handleGeneralQuery(String message) {
+        // 1. 진료과 감지
+        String department = detectDepartment(message);
+        log.info("   📋 진료과 감지: {}", department != null ? department : "전체");
+
+        // 2. RAG 컨텍스트 검색
+        String ragContext = vetKnowledgeSearchService.buildRAGContext(message, department, 3);
+
+        String response;
+        boolean ragUsed = !ragContext.isEmpty();
+
+        if (ragUsed) {
+            // 3. RAG 컨텍스트를 포함한 프롬프트 생성
+            String enhancedPrompt = buildRAGPrompt(message, ragContext);
+            response = claudeService.chat(enhancedPrompt);
+            log.info("   📚 RAG 컨텍스트 활용 ({})", department != null ? department : "전체");
+        } else {
+            // RAG 컨텍스트 없으면 기존 방식
+            response = claudeService.chat(message);
+            log.info("   💬 기본 수의사 모드");
+        }
+
+        return Map.of(
+                "success", true,
+                "intent", "GENERAL_HEALTH",
+                "response", response,
+                "ragUsed", ragUsed,
+                "department", department != null ? department : "전체");
+    }
+
+    /**
+     * 진료과 감지
+     */
+    private String detectDepartment(String message) {
+        if (SKIN_PATTERN.matcher(message).find())
+            return "피부과";
+        if (INTERNAL_PATTERN.matcher(message).find())
+            return "내과";
+        if (EYE_PATTERN.matcher(message).find())
+            return "안과";
+        if (DENTAL_PATTERN.matcher(message).find())
+            return "치과";
+        return null; // 전체 검색
+    }
+
+    /**
+     * RAG 프롬프트 생성
+     */
+    private String buildRAGPrompt(String userQuestion, String ragContext) {
+        return String.format("""
+                당신은 전문 수의사입니다. 아래 지식 베이스를 참고하여 답변해주세요.
+
+                %s
+
+                [보호자 질문]
+                %s
+
+                위 지식 베이스를 참고하되, 정확하고 친절하게 답변해주세요.
+                지식 베이스에 없는 내용은 일반 수의학 지식으로 보충해도 됩니다.
+                반드시 수의사 방문을 권장하는 내용도 포함하세요.
+                """, ragContext, userQuestion);
+    }
+
+    /**
+     * 피부 관련 질문 감지
+     */
+    private boolean isSkinRelated(String message) {
+        return SKIN_PATTERN.matcher(message).find();
+    }
+
+    /**
+     * 병원 관련 질문 감지
+     */
+    private boolean isHospitalRelated(String message) {
+        return HOSPITAL_PATTERN.matcher(message).find();
+    }
+
+    /**
+     * 지역명 추출
+     */
+    private String extractRegion(String message) {
+        var matcher = REGION_PATTERN.matcher(message);
+        if (matcher.find()) {
+            return matcher.group();
+        }
+        return null;
+    }
+
+    /**
+     * 병원 목록 텍스트 포맷
+     */
+    private String formatHospitalList(List<HospitalInfo> hospitals) {
+        if (hospitals.isEmpty()) {
+            return "검색된 병원이 없습니다.";
+        }
+
+        StringBuilder sb = new StringBuilder();
+        int count = 0;
+        for (HospitalInfo h : hospitals) {
+            if (count >= 3)
+                break; // 최대 3개만 표시
+            sb.append(String.format("\n🏥 **%s**%s\n",
+                    h.getName(),
+                    h.isEmergency() ? " (24시/응급)" : ""));
+            sb.append(String.format("   📍 %s\n", h.getRoadAddress()));
+            sb.append(String.format("   📞 %s\n", h.getPhone()));
+            count++;
+        }
+
+        if (hospitals.size() > 3) {
+            sb.append(String.format("\n...외 %d개 병원\n", hospitals.size() - 3));
+        }
+
+        return sb.toString();
+    }
+
+    /**
+     * 병원 응답 텍스트 생성
+     */
+    private String buildHospitalResponse(String message, String region, String hospitalInfo) {
+        StringBuilder response = new StringBuilder();
+
+        if (region != null) {
+            response.append(String.format("🏥 **%s 지역 동물병원** 검색 결과입니다.\n", region));
+        } else {
+            response.append("🏥 **주변 동물병원** 검색 결과입니다.\n");
+        }
+
+        response.append(hospitalInfo);
+        response.append("\n---\n");
+        response.append("📍 더 많은 병원 정보: `GET /api/hospital/search?region=지역명`\n");
+        response.append("📍 위치 기반 검색: `GET /api/hospital/nearby?lat=위도&lng=경도`");
+
+        return response.toString();
+    }
+
+    /**
+     * 텍스트 자르기
+     */
+    private String truncate(String text, int maxLen) {
+        if (text == null || text.length() <= maxLen)
+            return text;
+        return text.substring(0, maxLen) + "...";
+    }
+}

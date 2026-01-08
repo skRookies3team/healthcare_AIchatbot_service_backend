@@ -1,0 +1,352 @@
+[
+  {
+    "id": "lifet-001",
+    "title": "강아지 방광염 A to Z",
+    "content": "강아지 방광염은 대장균 등 세균성 감염으로 발생(80%). 주요 증상: 소변시 통증, 빈뇨, 혈뇨, 발열. 암컷이 수컷보다 4배 위험. 치료: 세팔로스포린 계열 항생제 7-14일 코스. 수분섭취 핵심, 크랜베리 추출물 보충제 병용 효과적. 재발률 30% 예방 위해 물 50ml/kg/day 필수.",
+    "category": "urinary",
+    "keywords": ["방광염", "혈뇨", "빈뇨", "요로감염"]
+  },
+  {
+    "id": "lifet-002",
+    "title": "십자인대 파열 (대형견 필독)",
+    "content": "골든리트리버, 래브라도 5세 이상에서 70% 발생. 앞다리 절뚝거림, 무릎 부종, 앉을 때 다리 회전 특징. TPLO 수술이 골드스탠다드(성공률 95%). 보존요법 재파열 위험 50%. 수술 후 체중 10% 감량 + 관절보호식 3개월 필수.",
+    "category": "orthopedic",
+    "keywords": ["절뚝", "파열", "무릎", "십자인대"]
+  },
+  {
+    "id": "lifet-003",
+    "title": "고양이 당뇨병 완전관리법",
+    "content": "인슐린 의존성 당뇨. 하루 물섭취량 100ml/kg 이상, 다뇨, 식욕 증가가 1차 증상. 인슐린 주사 2회/일(아침저녁) + 저탄수화물 사료. 혈당 모니터링 필수. 조기치료 시 완치 가능성 30%. 비만 고양이 90% 위험군.",
+    "category": "endocrine",
+    "keywords": ["갈증", "다뇨", "당뇨", "인슐린"]
+  },
+  {
+    "id": "lifet-004",
+    "title": "급성 설사 대처법",
+    "content": "소화불량, 기생충, 바이러스성 장염. 1차 대처: 단식 12시간 → 닭가슴살+쌀죽(1:3). 프로바이오틱스 필수. 점액혈변/3일 지속 시 수의사 방문(혈액검사+대변검사). 예방: 사료 급여량 20% 줄이기.",
+    "category": "gastroenterology",
+    "keywords": ["설사", "구토", "소화불량"]
+  },
+  {
+    "id": "lifet-005",
+    "title": "고양이 요로결석 위기",
+    "content": "수컷 90% 위험. 스트레스 + pH 불균형 원인. 혈뇨, 배뇨곤란, 울음이 응급증상. 비수술적 용해(4-6주), 재발률 50%. 스트레스 관리 + 물섭취 80ml/kg/day 필수.",
+    "category": "urinary",
+    "keywords": ["요로결석", "혈뇨", "배뇨곤란"]
+  },
+  {
+    "id": "lifet-006",
+    "title": "혈소판 감소증 위험",
+    "content": "면역질환 원인 70%. 잇몸출혈, 코피, 반점. 스테로이드 + 면역억제제. 출혈 시 즉시 응급. 예방: 정기 혈액검사(6개월). 플라텔릿 수치 50,000 이하 위험.",
+    "category": "hematology",
+    "keywords": ["혈소판", "출혈", "반점"]
+  },
+  {
+    "id": "lifet-007",
+    "title": "수정체 탈구 유전질환",
+    "content": "테리어 품종 80% 유전. 안구 충혈, 혼탁, 실명 위험. 수술만 치료법. 조기 발견 시 양안 50% 진행. 사료 내 항산화제(비타민E) 보충.",
+    "category": "ophthalmology",
+    "keywords": ["눈", "혼탁", "충혈"]
+  },
+  {
+    "id": "lifet-008",
+    "title": "기관지염 기침 패턴",
+    "content": "심장성(60%), 비심장성(40%). 건조/습성 기침 구분 중요. 심장 초음파 + 흉부 X-ray. 항생제 + 기침억제제 조합. 실내 온습도 50-60% 유지.",
+    "category": "respiratory",
+    "keywords": ["기침", "호흡곤란"]
+  },
+  {
+    "id": "lifet-009",
+    "title": "고관절 이완증 대형견",
+    "content": "독일셰퍼드 85% 발생. 6개월령 진단 중요. 보존요법(60%) vs 수술(40%). 체중관리 + 관절보호식. 진행성 통증 → THA 수술 검토.",
+    "category": "orthopedic",
+    "keywords": ["고관절", "다리 저림"]
+  },
+  {
+    "id": "lifet-010",
+    "title": "패텔라 탈구 소형견",
+    "content": "치와와, 요크셔 70%. 1-2등급 보존, 3-4등급 수술. 좌우 동시발생 50%. 체중 15% 감량 + 근력운동.",
+    "category": "orthopedic",
+    "keywords": ["무릎 튀어나옴", "절뚝"]
+  },
+  {
+    "id": "lifet-011",
+    "title": "CBD 오일 안전사용법",
+    "content": "항염증/항불안 효과. 간 독성 주의(혈액검사 3개월). 0.1mg/kg부터 시작, 수의사 모니터링 필수. 관절염/공포증에 효과.",
+    "category": "alternative",
+    "keywords": ["CBD", "관절염", "공포증"]
+  },
+  {
+    "id": "lifet-012",
+    "title": "췌장효소 보충제 사용법",
+    "content": "소화불량 개선. 식후 즉시 분말 뿌리기. 지방변 확인. 회복기간 4-6주. 프로바이오틱스 병용.",
+    "category": "gastroenterology",
+    "keywords": ["지방변", "소화불량"]
+  },
+  {
+    "id": "lifet-013",
+    "title": "루테인 눈 건강",
+    "content": "고양이 노안 예방. 90일 이상 투여. 황반변성 위험 40% 감소. 비타민A/E 병용.",
+    "category": "ophthalmology",
+    "keywords": ["노안", "시력저하"]
+  },
+  {
+    "id": "lifet-014",
+    "title": "오메가-3 관절염 완화",
+    "content": "EPA/DHA 1000mg 이상. 염증 수치 30% 감소. 관절보호식 전환 8주 후 효과.",
+    "category": "nutrition",
+    "keywords": ["관절염", "오메가3"]
+  },
+  {
+    "id": "lifet-015",
+    "title": "베토퀴놀 면역강화",
+    "content": "β-글루칸. 바이러스성 질환 예방. 파보 바이러스 생존율 25%↑. 투여 전후 2주 간격.",
+    "category": "immunology",
+    "keywords": ["면역저하", "바이러스"]
+  },
+  {
+    "id": "lifet-016",
+    "title": "발톱염 감염",
+    "content": "곰팡이/세균. 발톱 변색+부종. 항진균제 연고+네일트리머 주1회. 발 사우나 10분/일.",
+    "category": "dermatology",
+    "keywords": ["발톱", "염증"]
+  },
+  {
+    "id": "lifet-017",
+    "title": "눈물자국 원인제거",
+    "content": "누선 협착. 눈물관 세척+인공눈물 주4회. 갈색 눈물자국 세정제 사용.",
+    "category": "ophthalmology",
+    "keywords": ["눈물자국", "눈곱"]
+  },
+  {
+    "id": "lifet-018",
+    "title": "심부전 초기증상",
+    "content": "기침+운동불내성. 심장 초음파 EF 40% 이하 위험. ACEi+이뇨제 조합. 소금 제한.",
+    "category": "cardiology",
+    "keywords": ["기침", "운동피로"]
+  },
+  {
+    "id": "lifet-019",
+    "title": "신부전 크레아틴인",
+    "content": "크레아티닌 2.0 이상. 단백질 제한+인산제. 조기 발견 시 진행 50% 지연.",
+    "category": "nephrology",
+    "keywords": ["구토", "식욕저하"]
+  },
+  {
+    "id": "lifet-020",
+    "title": "구내염 고양이",
+    "content": "칼시바이러스 80%. 레이저치료+항생제. 치석제거 필수. 재발률 60%.",
+    "category": "dentistry",
+    "keywords": ["구내염", "침흘림"]
+  },
+  {
+    "id": "lifet-021",
+    "title": "부신피질기능저하증",
+    "content": "코르티솔 결핍. 무기력+구토. 평생 스테로이드 보충. 위기 시 수액+고용량 스테로이드.",
+    "category": "endocrinology",
+    "keywords": ["무기력", "식욕저하"]
+  },
+  {
+    "id": "lifet-022",
+    "title": "간문맥우회로증후군",
+    "content": "포메라니안 70%. 황달+신경증상. 저단백식+락툴로스. 수술 성공률 85%.",
+    "category": "hepatology",
+    "keywords": ["황달", "발작"]
+  },
+  {
+    "id": "lifet-023",
+    "title": "판정막염",
+    "content": "면역질환. 안구 충혈+통증. 국소 스테로이드. 전신 스테로이드 주의.",
+    "category": "ophthalmology",
+    "keywords": ["눈 충혈", "눈통증"]
+  },
+  {
+    "id": "lifet-024",
+    "title": "임질선염",
+    "content": "세균 감염. 항생제+딥딥 배농. 재발률 40%. 정기 초음파 검사.",
+    "category": "reproductive",
+    "keywords": ["고환염", "부종"]
+  },
+  {
+    "id": "lifet-025",
+    "title": "대동맥궁 이상",
+    "content": "저먼슈터 80%. 삼킴곤란+기침. CT 혈관조영술. 수술 성공률 90%.",
+    "category": "cardiology",
+    "keywords": ["삼킴곤란", "구토"]
+  },
+  {
+    "id": "lifet-026",
+    "title": "사구체신염",
+    "content": "단백뇨+혈뇨. 면역억제제. 신기능 모니터링 3개월. 진행성 30%.",
+    "category": "nephrology",
+    "keywords": ["단백뇨", "혈뇨"]
+  },
+  {
+    "id": "lifet-027",
+    "title": "면역매개성 용혈빈혈",
+    "content": "황달+빈혈. 스테로이드+면역억제제. 재발률 50%. 정기 CBC 검사.",
+    "category": "hematology",
+    "keywords": ["황달", "빈혈"]
+  },
+  {
+    "id": "lifet-028",
+    "title": "췌장염 급성",
+    "content": "고지방식 유발 70%. 절식+수액. 지방소화효소 검사. 재발률 30%.",
+    "category": "gastroenterology",
+    "keywords": ["복통", "구토"]
+  },
+  {
+    "id": "lifet-029",
+    "title": "심낭삼출",
+    "content": "배액술+NSAIDs. 원인질환 치료. 재발률 40%. 정기 심초음파.",
+    "category": "cardiology",
+    "keywords": ["복부부종", "기침"]
+  },
+  {
+    "id": "lifet-030",
+    "title": "식도이완불량증",
+    "content": "사료 역류+구토. 칼슘채널차단제. 식도확대술 고려. 체중감량 필수.",
+    "category": "gastroenterology",
+    "keywords": ["구토", "사료역류"]
+  },
+  {
+    "id": "lifet-031",
+    "title": "부신종양",
+    "content": "쿠싱/애디슨 동시증상. CT/MRI. 수술 성공률 80%. 평생 호르몬제.",
+    "category": "endocrinology",
+    "keywords": ["갈증", "무기력"]
+  },
+  {
+    "id": "lifet-032",
+    "title": "간세포암",
+    "content": "울트라사운드+혈청AFP. 간동맥색전술. 예후 6-12개월.",
+    "category": "oncology",
+    "keywords": ["황달", "복수"]
+  },
+  {
+    "id": "lifet-033",
+    "title": "심근증",
+    "content": "심장 확대+부정맥. 베타차단제+ACEi. 심초음파 필수. 돌연사 위험.",
+    "category": "cardiology",
+    "keywords": ["실신", "부정맥"]
+  },
+  {
+    "id": "lifet-034",
+    "title": "폐동맥고혈압",
+    "content": "운동불내성+실신. sildenafil. 심우초음파 PAPs 50mmHg 이상.",
+    "category": "cardiology",
+    "keywords": ["호흡곤란", "실신"]
+  },
+  {
+    "id": "lifet-035",
+    "title": "신경근육질환",
+    "content": "보들마소병 유사. 근생검. 면역억제제. 진행성 마비.",
+    "category": "neurology",
+    "keywords": ["마비", "보행이상"]
+  },
+  {
+    "id": "lifet-036",
+    "title": "비만증후군 관리",
+    "content": "체중 20% 초과. 저칼로리식+운동. 간질환 위험 5배. 월 2% 감량 목표.",
+    "category": "nutrition",
+    "keywords": ["비만", "간질환"]
+  },
+  {
+    "id": "lifet-037",
+    "title": "알레르기성 기관지염",
+    "content": "계절성 기침. 사이클로스포린. 알레르기 검사. 환경관리 필수.",
+    "category": "respiratory",
+    "keywords": ["계절성 기침", "알레르기"]
+  },
+  {
+    "id": "lifet-038",
+    "title": "만성신부전 관리",
+    "content": "IRIS Stage 2-4. 인산제+저단백. EPO 보충. 조기 발견 시 생존기간 2배.",
+    "category": "nephrology",
+    "keywords": ["빈뇨", "구토"]
+  },
+  {
+    "id": "lifet-039",
+    "title": "갑상선기능저하증",
+    "content": "레보티록신 평생. 털 빠짐+비만. T4 검사 6개월. 심장부작용 주의.",
+    "category": "endocrinology",
+    "keywords": ["털빠짐", "비만"]
+  },
+  {
+    "id": "lifet-040",
+    "title": "심내막염",
+    "content": "항생제 4-6주 정맥. 심초음파 식별. 치과질환 원인 70%. 정기 심초음파.",
+    "category": "cardiology",
+    "keywords": ["발열", "심잡음"]
+  },
+  {
+    "id": "lifet-041",
+    "title": "담즙산결핍증",
+    "content": "UDCA+사메틴. 간효소 정상화 8주. 콜레스테롤 검사.",
+    "category": "hepatology",
+    "keywords": ["황달", "가려움"]
+  },
+  {
+    "id": "lifet-042",
+    "title": "면역매개 뇌수막염",
+    "content": "경추강직+발작. 스테로이드+항경련제. MRI 진단. 재발률 40%.",
+    "category": "neurology",
+    "keywords": ["발작", "목강직"]
+  },
+  {
+    "id": "lifet-043",
+    "title": "폐색전증",
+    "content": "호흡곤란+실신. 혈전용해제. 심우압 상승. 장기입원 후 휴식.",
+    "category": "cardiology",
+    "keywords": ["급성호흡곤란", "실신"]
+  },
+  {
+    "id": "lifet-044",
+    "title": "부갑상선기능항진증",
+    "content": "고칼슘혈증. 칼시토닌+수술. 신장결석 위험 5배. 칼슘 검사.",
+    "category": "endocrinology",
+    "keywords": ["갈증", "구토"]
+  },
+  {
+    "id": "lifet-045",
+    "title": "대식세포활성화증후군",
+    "content": "다발성 장기부전. 사이클로스포린. 조기진단 생존율 80%.",
+    "category": "hematology",
+    "keywords": ["고열", "빈혈"]
+  },
+  {
+    "id": "lifet-046",
+    "title": "심근염 바이러스성",
+    "content": "돌연사 위험. 면역억제제. 심근생검. 휴식 6개월.",
+    "category": "cardiology",
+    "keywords": ["실신", "부정맥"]
+  },
+  {
+    "id": "lifet-047",
+    "title": "만성활성EBV증후군",
+    "content": "간비대+황달. 리투크시맙. 면역재구성. 장기생존 50%.",
+    "category": "immunology",
+    "keywords": ["황달", "림프절비대"]
+  },
+  {
+    "id": "lifet-048",
+    "title": "인대재파열 예방",
+    "content": "TPLO 후 재활 12주. 수중트레드밀이 효과적. 재파열률 10%↓.",
+    "category": "orthopedic",
+    "keywords": ["재파열", "재활"]
+  },
+  {
+    "id": "lifet-049",
+    "title": "고혈압 망막병증",
+    "content": "시력저하+출혈. 혈압조절제. 망막레이저. 정기 안과검진.",
+    "category": "ophthalmology",
+    "keywords": ["시력저하", "시야 흐림"]
+  },
+  {
+    "id": "lifet-050",
+    "title": "만성폐쇄성 폐질환",
+    "content": "기관지확장제+스테로이드. 산소포화도 모니터링. 흡연중단 필수.",
+    "category": "respiratory",
+    "keywords": ["만성기침", "호흡곤란"]
+  }
+]

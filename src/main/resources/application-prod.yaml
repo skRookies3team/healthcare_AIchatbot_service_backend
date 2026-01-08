@@ -1,0 +1,65 @@
+spring:
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 2
+      connection-timeout: 30000
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    open-in-view: false
+    properties:
+      hibernate:
+        default_schema: health
+
+  # OpenAI
+  ai:
+    openai:
+      api-key: ${OPENAI_API_KEY}
+      chat:
+        options:
+          model: gpt-4o
+
+# 운영 환경 모니터링
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      probes:
+        enabled: true
+
+# Swagger 비활성화 (운영)
+springdoc:
+  api-docs:
+    enabled: false
+  swagger-ui:
+    enabled: false
+
+# Bedrock + Milvus
+aws:
+  bedrock:
+    api-key: ${AWS_BEDROCK_API_KEY}
+    region: ${AWS_BEDROCK_REGION}
+    model-id: ${AWS_BEDROCK_MODEL_ID}
+
+  vectorstore:
+    milvus:
+      client:
+        host: ${MILVUS_HOST}
+        port: 19530
+      initialize-schema: false   # 운영에서는 수동 관리
+
+# Naver
+pet-health:
+  naver:
+    client-id: ${NAVER_CLIENT_ID}
+    client-secret: ${NAVER_CLIENT_SECRET}
